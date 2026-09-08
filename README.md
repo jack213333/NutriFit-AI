@@ -23,6 +23,20 @@ NutriFit AI 是一个集 **AI 图像识别、RAG 知识问答、多轮 Agent 方
 | 04 知识科普 | 基于本地知识库的 RAG 问答，答案附带证据引用、可点击复核 |
 | 05 系统设置 | 模型连接状态、4 个功能开关（图片识别/Agent 追踪/长期记忆/风险提示）运行时热切换 |
 
+## 界面截图
+
+**健康总览**：聚合今日热量、身体趋势、饮食结构与 AI 健康建议。
+
+<img src="docs/images/dashboard.png" alt="健康总览" width="720">
+
+**热量记录**：拍照识别 + 手动记录，营养素统计与明细管理。
+
+<img src="docs/images/calories.png" alt="热量记录" width="720">
+
+**身体管理**：身体档案、长期指标趋势与个性化方案推荐。
+
+<img src="docs/images/body.png" alt="身体管理" width="720">
+
 ## 技术架构
 
 ```
@@ -164,6 +178,10 @@ npm run dev      # http://127.0.0.1:5175 ，/api 已代理到 8008
 - 上传图片按留存策略管理（默认 30 天），支持一键清空全部运行数据
 - API Key 不进入代码仓库：`config.yaml` / `.env` 均在 `.gitignore` 中，仓库仅提供脱敏模板
 - 日志对 API Key 脱敏，接口只返回 `has_chat_api_key` 布尔值
+
+## 开源协议
+
+本项目基于 [MIT License](LICENSE) 开源。
 
 ## 免责声明
 
