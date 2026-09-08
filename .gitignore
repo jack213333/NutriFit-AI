@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Node
+node_modules/
+frontend/dist/
+
+# 日志
+*.log
+
+# 运行时数据（用户饮食记录、身体档案、会话、上传图片等）
+backend/storage/
+
+# 密钥与本地配置（真实 API Key 不进入仓库）
+backend/config/config.yaml
+backend/.env
+.env
+
+# IDE / 系统
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Claude Code
+.claude/
+*.tsbuildinfo

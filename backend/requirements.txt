@@ -1,0 +1,8 @@
+# NutriFit AI 后端运行依赖（backend/app 实际 import 的第三方包）
+fastapi>=0.136
+uvicorn>=0.46
+pydantic>=2.12
+PyYAML>=6.0
+openai>=2.33
+scikit-learn>=1.6
+python-multipart>=0.0.27
