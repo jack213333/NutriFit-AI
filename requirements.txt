@@ -1,0 +1,7 @@
+# Vercel 部署依赖（uvicorn 由 Vercel 运行时提供，无需安装）
+fastapi>=0.136
+pydantic>=2.12
+PyYAML>=6.0
+openai>=2.33
+numpy>=2.0
+python-multipart>=0.0.27

@@ -7,6 +7,9 @@ import yaml
 BASE_DIR = Path(__file__).resolve().parents[2]
 DATA_DIR = BASE_DIR / "data"
 STORAGE_DIR = BASE_DIR / "backend" / "storage"
+if os.getenv("VERCEL"):
+    # Vercel 函数文件系统只读，运行时数据放 /tmp（实例内有效，冷启动后清空）
+    STORAGE_DIR = Path("/tmp/nutrifit/storage")
 UPLOAD_DIR = STORAGE_DIR / "uploads"
 RECORDS_FILE = STORAGE_DIR / "meal_records.json"
 PROFILE_FILE = STORAGE_DIR / "user_profile.json"

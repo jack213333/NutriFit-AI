@@ -1,12 +1,12 @@
 import csv
 import math
 import re
+import zlib
 from collections import Counter, defaultdict
 from pathlib import Path
 
+import numpy as np
 from openai import OpenAI
-from sklearn.feature_extraction.text import HashingVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
 
 from app.config import CHAT_MODEL, DATA_DIR, OPENAI_API_KEY, OPENAI_BASE_URL
 from app.services.sse import sse_event
@@ -53,16 +53,40 @@ def infer_domain(path: Path):
     return "健康知识"
 
 
+class HashVectorizer:
+    """sklearn HashingVectorizer 的轻量替代（char_wb、2-4 gram、L2 归一化）。
+
+    Vercel 函数打包体积上限 225MB，scikit-learn/scipy 装不下，改用 numpy 实现。
+    """
+
+    def __init__(self, n_features=1536, ngram_range=(2, 4)):
+        self.n_features = n_features
+        self.ngram_range = ngram_range
+
+    def _grams(self, text):
+        text = (text or "").lower()
+        out = []
+        for word in text.split():
+            for n in range(self.ngram_range[0], self.ngram_range[1] + 1):
+                padded = f" {word} "
+                for i in range(len(padded) - n + 1):
+                    out.append(padded[i : i + n])
+        return out
+
+    def transform(self, texts):
+        mat = np.zeros((len(texts), self.n_features), dtype=np.float32)
+        for i, text in enumerate(texts):
+            for gram in self._grams(text):
+                mat[i, zlib.crc32(gram.encode("utf-8")) % self.n_features] += 1.0
+            norm = float(np.linalg.norm(mat[i])) or 1.0
+            mat[i] /= norm
+        return mat
+
+
 class RAGService:
     def __init__(self):
         self.docs = []
-        self.vectorizer = HashingVectorizer(
-            n_features=1536,
-            analyzer="char_wb",
-            ngram_range=(2, 4),
-            alternate_sign=False,
-            norm="l2",
-        )
+        self.vectorizer = HashVectorizer(n_features=1536, ngram_range=(2, 4))
         self.matrix = None
         self.doc_tokens = []
         self.idf = {}
@@ -126,7 +150,7 @@ class RAGService:
 
     def retrieve(self, question: str, top_k=6):
         q_vec = self.vectorizer.transform([question])
-        vector_scores = cosine_similarity(q_vec, self.matrix)[0]
+        vector_scores = q_vec.dot(self.matrix.T)[0]  # 行已 L2 归一化，点积即余弦相似度
         bm25_scores = self._bm25(question)
         max_v = max(vector_scores) if len(vector_scores) else 1
         max_b = max(bm25_scores) if bm25_scores else 1
