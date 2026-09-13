@@ -7,6 +7,7 @@ from app.config import BODY_METRICS_FILE, PROFILE_FILE, RECORDS_FILE, SETTINGS, 
 from app.schemas import AgentChatRequest, BodyMetricRecord, ChatRequest, FeatureToggleRequest, FoodLogRequest, HealthProfile
 from app.services.agent import agent
 from app.services.body_metrics import add_body_metric, list_body_metrics, trend_summary
+from app.services.demo_seed import seed_demo_data
 from app.services.food import add_records, daily_summary, estimate_item, list_records, load_foods
 from app.services.health import calculate_profile
 from app.services.memory import get_recent_context, list_sessions, new_session_id
@@ -233,3 +234,7 @@ def knowledge_stats():
 @app.get("/")
 def root():
     return {"name": "NutriFit AI", "docs": "/docs"}
+
+
+# Vercel 冷启动：/tmp 清空时播种演示数据（本地不生效）
+seed_demo_data()
